@@ -38,6 +38,7 @@ class Net(nn.Module):
         # Adaptive Front-end
         self.conv1_e1 = conv(1, 128, 63)
         self.conv2_e2 = conv(128, 128, 127)
+        self.bn = nn.BatchNorm1d(128)
         self.conv_act = nn.Softplus()
 
         # bn?
@@ -69,6 +70,7 @@ class Net(nn.Module):
 
         x2 = self.conv2_e2(x1_abs)
         x2 = self.conv_act(x2)
+        x2 = self.bn(x2)
         # print('x2 >>', x2.size())
         z, pool_idx = self.maxpool(x2)
 
@@ -90,7 +92,6 @@ class Net(nn.Module):
         tensor = self.linear_d1(x1_hat)
         tensor = self.linear_d2(tensor)
         tensor = self.linear_d3(tensor)
-        tensor= self.linear_d4(tensor)
         x0_hat = self.linear_d4(tensor)
 
         x0_hat = x0_hat.permute(0, 2, 1)
@@ -102,19 +103,6 @@ class Net(nn.Module):
 
     def compute_loss(self, anno, pred):
         return F.l1_loss(anno, pred)
-
-    def run_on_batch(self, batch):
-        wav_x = batch['x']
-        # print('model: ', wav_x.size()) # (32, 1, 1024)
-        wav_y = batch['y']
-        # print('model: ', wav_y.size()) # (32, 1, 1024)
-
-        wav_y_pred = self(wav_x)
-
-        wav_y = torch.squeeze(wav_y)
-        wav_y_pred = torch.squeeze(wav_y_pred)
-        loss = self.compute_loss(wav_y, wav_y_pred)
-        return wav_y_pred, loss
 
 
 if __name__ == '__main__':
