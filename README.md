@@ -5,3 +5,5 @@ Implementation of "[Modeling of nonlinear audio effects with end-to-end deep neu
 
 This repo is still under construction. GOGOGO!
 
+### references
+* [Audio-Plugin-Development-Resources](https://github.com/jareddrayton/Audio-Plugin-Development-Resources)
